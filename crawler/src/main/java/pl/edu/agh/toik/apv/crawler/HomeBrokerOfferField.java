@@ -1,5 +1,7 @@
 package pl.edu.agh.toik.apv.crawler;
 
+import pl.edu.agh.toik.visualisation.database.dto.Offer;
+
 /**
  * Created by Magda on 2015-05-06.
  */

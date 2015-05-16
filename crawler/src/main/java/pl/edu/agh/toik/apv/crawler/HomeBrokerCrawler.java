@@ -7,9 +7,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import pl.edu.agh.toik.apv.enums.OfferType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
+import pl.edu.agh.toik.visualisation.database.dto.Offer;
+import pl.edu.agh.toik.visualisation.database.dto.enums.OfferType;
 
-import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HomeBrokerCrawler {
 
-	private Logger LOG = Logger.getLogger(HomeBrokerCrawler.class);
+	private static Logger LOG = Logger.getLogger(HomeBrokerCrawler.class);
 
 	private static final String RENT_START_URL = "https://homebroker.pl/wynajmij";
 
@@ -45,9 +51,43 @@ public class HomeBrokerCrawler {
 
 	private Set<String> allowedDomains = Sets.newHashSet("https://homebroker.pl/");
 
+    private static String stringURI = "postgres://yjgigsqewjnjwr:J7plfUUZwc-c5TUDdo5sm-GHwA@ec2-54-217-202-108.eu-west-1.compute.amazonaws.com:5432/dau4v1agvs3tmr";
+
+    private static Connection getConnection() throws URISyntaxException, SQLException {
+        URI dbUri = new URI(stringURI);
+
+        LOG.info(dbUri);
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath()+"?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
+
+        return DriverManager.getConnection(dbUrl, username, password);
+    }
+
+    Connection connection;
+
+    public void setConnection(Connection connection){
+        this.connection = connection;
+    }
+    /*@Autowired
+    OfferDAO offerDAO;*/
+
 	public static void main(String[] args) {
-		HomeBrokerCrawler homeBrokerCrawler = new HomeBrokerCrawler();
-		System.out.println("Starting");
+
+        Connection connection = null;
+        HomeBrokerCrawler homeBrokerCrawler = new HomeBrokerCrawler();
+        try {
+            connection = getConnection();
+            homeBrokerCrawler.setConnection(connection);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Starting");
+
+
 //		homeBrokerCrawler.processPage(RENT_START_URL);
 //		homeBrokerCrawler.processPage("https://homebroker.pl/?t=9#!r=wyniki-wyszukiwania:typ,mieszkanie|rynek,pierwotny-wtorny|rub,sprzedaz|metraz,|lokalizacja,Krolewska-10-20400-Lublin-Polska|standard,%20|pokoje_od,0|pokoje_do,0|cena_od,|cena_do,|pietro_od,|pietro_do,|rok_budowy_od,|rok_budowy_do,undefined|dystans,1000");
 
@@ -173,10 +213,30 @@ public class HomeBrokerCrawler {
 		return false;
 	}
 
-	private void saveIfNotEmpty(Offer offer) {
+    private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
+
+    private void saveIfNotEmpty(Offer offer) {
 		boolean isEmpty = offer.getCity() == null || offer.getPrice() == 0.0 || offer.getLatitude() == 0.0 || offer.getLongitude() == 0.0;
 		if ( !isEmpty ) {
-			offers.add(offer);
+            if( ( "Krakow".equals(offer.getCity())||"Kraków".equals(offer.getCity()) ) && OfferType.RENT.equals(offer.getOfferType()) ){
+                LOG.info("trying to save the offer");
+                try {
+                    PreparedStatement statement = connection.prepareStatement(insertQuery);
+                    statement.setLong(1,offer.getOfferId());
+                    statement.setString(2,offer.getType());
+                    statement.setString(3,offer.getCity());
+                    statement.setDouble(4,offer.getPrice());
+                    statement.setDouble(5,offer.getArea());
+                    statement.setDouble(6,offer.getLatitude());
+                    statement.setDouble(7,offer.getLongitude());
+                    statement.executeUpdate();
+                    connection.commit();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                //offerDAO.saveOffer(offer);
+            }
 		}
 	}
 

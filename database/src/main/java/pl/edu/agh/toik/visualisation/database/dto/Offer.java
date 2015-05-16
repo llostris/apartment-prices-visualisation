@@ -1,30 +1,47 @@
-package pl.edu.agh.toik.apv.crawler;
+package pl.edu.agh.toik.visualisation.database.dto;
 
-import pl.edu.agh.toik.apv.enums.OfferType;
+import pl.edu.agh.toik.visualisation.database.dto.enums.OfferType;
+
+import javax.annotation.Generated;
+import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created by Magda on 2015-05-06.
  */
-public class Offer {
 
+@Entity(name = "OFFER")
+public class Offer implements Serializable{
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name="ID")
 	private long id;
 
+    @Column(name="OFFER_ID")
 	private long offerId;
 
+    @Column(name="TYPE")
 	private String type;
 
+    @Transient
 	private OfferType offerType;
 
+    @Column(name="CITY")
 	private String city;
 
 	private int rooms;
 
+    @Column(name="PRICE")
 	private double price;
 
+    @Column(name="AREA")
 	private double area;
 
+    @Column(name="LATITUDE")
 	private double latitude;
 
+    @Column(name="LONGITUDE")
 	private double longitude;
 
 	public long getId() {
