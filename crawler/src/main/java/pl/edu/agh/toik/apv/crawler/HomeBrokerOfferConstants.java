@@ -14,5 +14,7 @@ public class HomeBrokerOfferConstants {
 	public static Map<String, OfferType> OFFER_TYPES_MAP = new HashMap<String, OfferType>() {{
 		put("wynajem", OfferType.RENT);
 		put("sprzedaz", OfferType.SELL);
+		put("wynajęcia", OfferType.RENT);
+		put("sprzedaż", OfferType.SELL);
 	}};
 }

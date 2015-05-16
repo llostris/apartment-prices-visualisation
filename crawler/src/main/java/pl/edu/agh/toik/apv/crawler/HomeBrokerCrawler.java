@@ -29,19 +29,15 @@ public class HomeBrokerCrawler {
 
 	private static Logger LOG = Logger.getLogger(HomeBrokerCrawler.class);
 
-	private static final String RENT_START_URL = "https://homebroker.pl/wynajmij";
+	private static final String RENT_START_URL = "https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,pokoje,0,rub,wynajem,exclusive,0,strona,1.html";
 
 	private static final String SELL_START_URL = "https://homebroker.pl/kup";
 
-	private static String outputFile;
-
 	private Set<String> visitedUrls = new HashSet<String>();
 
-	private Set<String> urlsToVisit = new HashSet<String>();
+	private List<String> urlsToVisit = new ArrayList<>();
 
 	private FirefoxDriver driver = new FirefoxDriver();
-
-	private int maxNumberOfEntries = 100;
 
 	private int visitedUrlsCount = 0;
 
@@ -50,6 +46,8 @@ public class HomeBrokerCrawler {
 	private Set<String> validUrlElements = Sets.newHashSet("oferty", "wynajmij", "kup", "wyniki-wyszukiwania");
 
 	private Set<String> allowedDomains = Sets.newHashSet("https://homebroker.pl/");
+
+	private Set<String> elementsToRemove = Sets.newHashSet("div.header", "div.footerMenu", "div.footerBar");
 
     private static String stringURI = "postgres://yjgigsqewjnjwr:J7plfUUZwc-c5TUDdo5sm-GHwA@ec2-54-217-202-108.eu-west-1.compute.amazonaws.com:5432/dau4v1agvs3tmr";
 
@@ -69,8 +67,6 @@ public class HomeBrokerCrawler {
     public void setConnection(Connection connection){
         this.connection = connection;
     }
-    /*@Autowired
-    OfferDAO offerDAO;*/
 
 	public static void main(String[] args) {
 
@@ -89,10 +85,9 @@ public class HomeBrokerCrawler {
 
 
 //		homeBrokerCrawler.processPage(RENT_START_URL);
-//		homeBrokerCrawler.processPage("https://homebroker.pl/?t=9#!r=wyniki-wyszukiwania:typ,mieszkanie|rynek,pierwotny-wtorny|rub,sprzedaz|metraz,|lokalizacja,Krolewska-10-20400-Lublin-Polska|standard,%20|pokoje_od,0|pokoje_do,0|cena_od,|cena_do,|pietro_od,|pietro_do,|rok_budowy_od,|rok_budowy_do,undefined|dystans,1000");
 
 		// for testing
-		homeBrokerCrawler.processPage("https://homebroker.pl/oferty/mieszkanie-rynek-wtorny-wynajem-mazowieckie-warszawa-srodmiescie-bagno-oferta-328788.html");
+		homeBrokerCrawler.processPage("https://homebroker.pl/oferty/mieszkanie-rynek-wtorny-wynajem-malopolskie-krakow-stare-miasto-jana-kochanowskiego-oferta-324103.html");
 	}
 
 	private void processPage(String url) {
@@ -159,7 +154,7 @@ public class HomeBrokerCrawler {
 			offer.setLongitude(Double.parseDouble(div.attr("data-lng")));
 		}
 
-		setOfferType(offer, url);
+		setOfferType(offer, document);
 		saveIfNotEmpty(offer);
 
 		LOG.info("Obtained offer: " + offer.toString());
@@ -168,24 +163,31 @@ public class HomeBrokerCrawler {
 
 	private void followHyperLinks(Document document) {
 		LOG.info("Enter: followHyperLinks");
+		removeHeaderAndFooter(document);
 		Elements links = document.select("a[href]");
 		for ( Element link : links ) {
 //			System.out.println(link.attr("abs:href"));
-			// TODO: uncomment me
 			processPage(link.attr("abs:href"));
 		}
 	}
 
-	private void setOfferType(Offer offer, String url) {
+	private void removeHeaderAndFooter(Document document) {
+		for ( String selector : elementsToRemove ) {
+			document.select(selector).remove();
+		}
+	}
+
+	private void setOfferType(Offer offer, Document document) {
+		Elements offerTypeText = document.select(".offer-top-info span.blue.strong");
 		for ( String key : HomeBrokerOfferConstants.OFFER_TYPES_MAP.keySet() ) {
-			if ( url.contains(key) ) {
+			if ( offerTypeText.text().contains(key) ) {
 				offer.setOfferType(HomeBrokerOfferConstants.OFFER_TYPES_MAP.get(key));
 			}
 		}
 	}
 
 	private boolean isAllowedUrl(String url) {
-		if ( url.endsWith("#") || url.endsWith(".pdf") || url.endsWith(".jpg")) {
+		if ( url.endsWith("#") || url.endsWith(".pdf") || url.endsWith(".jpg") ) {
 			return false;
 		}
 
@@ -210,7 +212,7 @@ public class HomeBrokerCrawler {
 				return true;
 			}
 		}
-		return false;
+		return url.contains("oferty?offer_no");
 	}
 
     private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
@@ -219,7 +221,7 @@ public class HomeBrokerCrawler {
 		boolean isEmpty = offer.getCity() == null || offer.getPrice() == 0.0 || offer.getLatitude() == 0.0 || offer.getLongitude() == 0.0;
 		if ( !isEmpty ) {
             if( ( "Krakow".equals(offer.getCity())||"Kraków".equals(offer.getCity()) ) && OfferType.RENT.equals(offer.getOfferType()) ){
-                LOG.info("trying to save the offer");
+                LOG.info("trying to save the offer: " + offer);
                 try {
                     PreparedStatement statement = connection.prepareStatement(insertQuery);
                     statement.setLong(1,offer.getOfferId());
