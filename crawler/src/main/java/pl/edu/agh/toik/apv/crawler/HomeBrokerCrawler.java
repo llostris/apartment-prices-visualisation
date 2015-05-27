@@ -13,6 +13,7 @@ import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 import pl.edu.agh.toik.visualisation.database.dto.enums.OfferType;
 
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.*;
@@ -29,9 +30,12 @@ public class HomeBrokerCrawler {
 
 	private static Logger LOG = Logger.getLogger(HomeBrokerCrawler.class);
 
-	private static final String RENT_START_URL = "https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,pokoje,0,rub,wynajem,exclusive,0,strona,1.html";
+    // private static final String RENT_START_URL = "https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,pokoje,0,rub,wynajem,exclusive,0,strona,1.html";
+    //private static final String RENT_START_URL = "https://homebroker.pl/wyniki-wyszukiwania/lokalizacja,Kraków,rynek,pierwotny,wtorny,pokoje,0,rub,wynajem,exclusive,0,strona,1.html";
+    //private static final String RENT_START_URL = "https://homebroker.pl/wynajmij#!r=wyniki-wyszukiwania:typ,mieszkanie|rub,wynajem|metraz,|lokalizacja,Pawia-3-31154-Krakow-Polska|standard,%20|pokoje_od,|pokoje_do,|cena_od,|cena_do,|pietro_od,|pietro_do,|dystans,1000";
+    //private static final String RENT_START_URL = "https://homebroker.pl/wynajmij#!r=wyniki-wyszukiwania:typ,mieszkanie|rub,wynajem|metraz,|lokalizacja,Krolewska-6769-30045-Krakw-Polska|standard,%20|pokoje_od,|pokoje_do,|cena_od,|cena_do,|pietro_od,|pietro_do,|dystans,1000";
+    private static final String RENT_START_URL = "https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,1.html";
 
-	private static final String SELL_START_URL = "https://homebroker.pl/kup";
 
 	private Set<String> visitedUrls = new HashSet<String>();
 
@@ -40,6 +44,8 @@ public class HomeBrokerCrawler {
 	private FirefoxDriver driver = new FirefoxDriver();
 
 	private int visitedUrlsCount = 0;
+
+    private int totalVisitedUrlsCount = 0;
 
 	private List<Offer> offers = new ArrayList<Offer>();
 
@@ -50,6 +56,8 @@ public class HomeBrokerCrawler {
 	private Set<String> elementsToRemove = Sets.newHashSet("div.header", "div.footerMenu", "div.footerBar");
 
     private static String stringURI = "postgres://yjgigsqewjnjwr:J7plfUUZwc-c5TUDdo5sm-GHwA@ec2-54-217-202-108.eu-west-1.compute.amazonaws.com:5432/dau4v1agvs3tmr";
+
+    private FileWriter file;
 
     private static Connection getConnection() throws URISyntaxException, SQLException {
         URI dbUri = new URI(stringURI);
@@ -68,6 +76,14 @@ public class HomeBrokerCrawler {
         this.connection = connection;
     }
 
+    public HomeBrokerCrawler(){
+        try {
+            file = new FileWriter(new File("visitedUrls.log"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	public static void main(String[] args) {
 
         Connection connection = null;
@@ -84,14 +100,14 @@ public class HomeBrokerCrawler {
         System.out.println("Starting");
 
 
-//		homeBrokerCrawler.processPage(RENT_START_URL);
+		homeBrokerCrawler.processPage(RENT_START_URL);
 
 		// for testing
-		homeBrokerCrawler.processPage("https://homebroker.pl/oferty/mieszkanie-rynek-wtorny-wynajem-malopolskie-krakow-stare-miasto-jana-kochanowskiego-oferta-324103.html");
+		//homeBrokerCrawler.processPage("https://homebroker.pl/oferty/mieszkanie-rynek-wtorny-wynajem-malopolskie-krakow-stare-miasto-jana-kochanowskiego-oferta-324103.html");
 	}
 
 	private void processPage(String url) {
-		LOG.info("Enter: processPage: " + url);
+		//LOG.info("Enter: processPage: " + url);
 
 		if ( !hasBeenVisited(url) && isAllowedUrl(url) ) {
 			Document document = null;
@@ -186,10 +202,23 @@ public class HomeBrokerCrawler {
 		}
 	}
 
+    private String[] forbiddenFragments = {"mazowieckie","opolskie","mazurskie","lodzkie","pomorskie","sl%C4%85skie","lubuskie","dolnoslaskie","lubelskie","wielkopolskie","podlaskie","podkarpackie","swietokrzyskie"};
+
 	private boolean isAllowedUrl(String url) {
-		if ( url.endsWith("#") || url.endsWith(".pdf") || url.endsWith(".jpg") ) {
+        if ( !url.contains("oferty?offer_no") && !url.toLowerCase().contains("krakw") && !url.toLowerCase().contains("krakow") && !url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,")){
+            return false;
+        }
+        return true;
+		/*if ( url.endsWith("#") || url.endsWith(".pdf") || url.endsWith(".jpg") || url.startsWith("https://homebroker.pl/oferty/dom") || url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,strona,1.html")
+                || url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,typ,dom")) {
 			return false;
 		}
+        for(String forbidden : forbiddenFragments){
+            if (url.contains(forbidden)){
+                return false;
+            }
+        }
+
 
 		boolean isValidDomain = false;
 		for ( String domain : allowedDomains ) {
@@ -199,7 +228,7 @@ public class HomeBrokerCrawler {
 			}
 		}
 
-		return isValidDomain;
+		return isValidDomain;*/
 	}
 
 	private boolean hasBeenVisited(String url) {
@@ -212,7 +241,7 @@ public class HomeBrokerCrawler {
 				return true;
 			}
 		}
-		return url.contains("oferty?offer_no");
+		return url.contains("oferty?offer_no") ? true : url.contains("oferta-");
 	}
 
     private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
@@ -232,7 +261,7 @@ public class HomeBrokerCrawler {
                     statement.setDouble(6,offer.getLatitude());
                     statement.setDouble(7,offer.getLongitude());
                     statement.executeUpdate();
-                    connection.commit();
+                    //connection.commit();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -247,9 +276,19 @@ public class HomeBrokerCrawler {
 			try {
 				Thread.sleep(10000);
 				visitedUrlsCount = 0;
+                totalVisitedUrlsCount+=10;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+        if(totalVisitedUrlsCount==100){
+            try {
+                for(String url : visitedUrls){
+                        file.write(url+"\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 }
