@@ -14,4 +14,6 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+    <import resource="classes/spring.visualisation.xml" />
+
 </beans>

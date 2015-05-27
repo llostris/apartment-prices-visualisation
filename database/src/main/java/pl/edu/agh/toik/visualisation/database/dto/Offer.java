@@ -10,38 +10,39 @@ import java.io.Serializable;
  * Created by Magda on 2015-05-06.
  */
 
-@Entity(name = "OFFER")
+@Entity(name = "\"OFFER\"")
 public class Offer implements Serializable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name="ID")
+    @Column(name="\"ID\"")
 	private long id;
 
-    @Column(name="OFFER_ID")
+    @Column(name="\"OFFER_ID\"")
 	private long offerId;
 
-    @Column(name="TYPE")
+    @Column(name="\"TYPE\"")
 	private String type;
 
     @Transient
 	private OfferType offerType;
 
-    @Column(name="CITY")
+    @Column(name="\"CITY\"")
 	private String city;
 
+    @Transient
 	private int rooms;
 
-    @Column(name="PRICE")
+    @Column(name="\"PRICE\"")
 	private double price;
 
-    @Column(name="AREA")
+    @Column(name="\"AREA\"")
 	private double area;
 
-    @Column(name="LATITUDE")
+    @Column(name="\"LATITUDE\"")
 	private double latitude;
 
-    @Column(name="LONGITUDE")
+    @Column(name="\"LONGITUDE\"")
 	private double longitude;
 
 	public long getId() {

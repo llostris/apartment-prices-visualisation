@@ -8,6 +8,7 @@
 
     <import resource="classpath:spring.settings.xml" />
 
-    <!--<tx:annotation-driven transaction-manager="transactionManager"/>-->
-
+    <bean id="OfferService" class="pl.edu.agh.toik.visualisation.database.service.OfferService">
+        <property name="OfferDAO" ref="offerDAO"/>
+    </bean>
 </beans>

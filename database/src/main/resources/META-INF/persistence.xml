@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             version="1.0">
+    <persistence-unit name="persistenceUnit" transaction-type="RESOURCE_LOCAL" >
+        <class>pl.edu.agh.toik.visualisation.database.dto.Offer</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+        </properties>
+    </persistence-unit>
+</persistence>
