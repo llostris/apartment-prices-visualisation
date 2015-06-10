@@ -205,7 +205,7 @@ public class HomeBrokerCrawler {
     private String[] forbiddenFragments = {"mazowieckie","opolskie","mazurskie","lodzkie","pomorskie","sl%C4%85skie","lubuskie","dolnoslaskie","lubelskie","wielkopolskie","podlaskie","podkarpackie","swietokrzyskie"};
 
 	private boolean isAllowedUrl(String url) {
-        if ( !url.contains("oferty?offer_no") && !url.toLowerCase().contains("krakw") && !url.toLowerCase().contains("krakow") && !url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,")){
+        if ( !url.contains("oferty?offer_no") && !url.toLowerCase().contains("krakw")&& !url.toLowerCase().contains("krakowsk") && !url.toLowerCase().contains("krakow") && !url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,")){
             return false;
         }
         return true;
@@ -244,7 +244,8 @@ public class HomeBrokerCrawler {
 		return url.contains("oferty?offer_no") ? true : url.contains("oferta-");
 	}
 
-    private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
+    //private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
+    private static String insertQuery = "INSERT INTO offer (offer_id,type,city,price,area,latitude,longitude,district,street,rooms) VALUES( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )";
 
     private void saveIfNotEmpty(Offer offer) {
 		boolean isEmpty = offer.getCity() == null || offer.getPrice() == 0.0 || offer.getLatitude() == 0.0 || offer.getLongitude() == 0.0;
@@ -260,6 +261,9 @@ public class HomeBrokerCrawler {
                     statement.setDouble(5,offer.getArea());
                     statement.setDouble(6,offer.getLatitude());
                     statement.setDouble(7,offer.getLongitude());
+                    statement.setString(8,offer.getDistrict());
+                    statement.setString(9,offer.getStreet());
+                    statement.setInt(10,offer.getRooms());
                     statement.executeUpdate();
                     //connection.commit();
                 } catch (SQLException e) {

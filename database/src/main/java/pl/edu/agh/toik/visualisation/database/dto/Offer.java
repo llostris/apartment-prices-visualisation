@@ -10,40 +10,56 @@ import java.io.Serializable;
  * Created by Magda on 2015-05-06.
  */
 
-@Entity(name = "\"OFFER\"")
+//@Entity(name = "\"OFFER\"")
+@Entity(name = "offer")
 public class Offer implements Serializable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name="\"ID\"")
+    //@Column(name="\"ID\"")
+    @Column(name="id")
 	private long id;
 
-    @Column(name="\"OFFER_ID\"")
+    //@Column(name="\"OFFER_ID\"")
+    @Column(name="offer_id")
 	private long offerId;
 
-    @Column(name="\"TYPE\"")
+    //@Column(name="\"TYPE\"")
+    @Column(name="type")
 	private String type;
 
     @Transient
 	private OfferType offerType;
 
-    @Column(name="\"CITY\"")
+    //@Column(name="\"CITY\"")
+    @Column(name="city")
 	private String city;
 
-    @Transient
+    //@Transient
+    @Column(name="rooms")
 	private int rooms;
 
-    @Column(name="\"PRICE\"")
+    //@Column(name="\"PRICE\"")
+    @Column(name="price")
 	private double price;
 
-    @Column(name="\"AREA\"")
+    //@Column(name="\"AREA\"")
+    @Column(name="area")
 	private double area;
 
-    @Column(name="\"LATITUDE\"")
+    //@Column(name="\"LATITUDE\"")
+    @Column(name="latitude")
 	private double latitude;
 
-    @Column(name="\"LONGITUDE\"")
+    //@Column(name="\"LONGITUDE\"")
+    @Column(name="longitude")
 	private double longitude;
+
+    @Column(name="district")
+    private String district;
+
+    @Column(name="street")
+    private String street;
 
 	public long getId() {
 		return id;
@@ -125,7 +141,23 @@ public class Offer implements Serializable{
 		this.longitude = longitude;
 	}
 
-	@Override
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    @Override
 	public String toString() {
 		return type + "," +
 				city + "," +

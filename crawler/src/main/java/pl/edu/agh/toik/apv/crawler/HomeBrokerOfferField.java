@@ -13,7 +13,8 @@ public enum HomeBrokerOfferField {
 	AREA_ID("Metry"),
 	PRICE_ID("Price"),
 	OFFER_ID("idoferty");
-
+    /*STREET(""),
+    DISTRICT("");*/
 	private final String id;
 
 	HomeBrokerOfferField(String id) {
