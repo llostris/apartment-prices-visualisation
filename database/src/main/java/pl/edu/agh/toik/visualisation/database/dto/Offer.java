@@ -165,6 +165,8 @@ public class Offer implements Serializable{
 				price + "," +
 				area + "," +
 				latitude + "," +
-				longitude;
+				longitude + "," +
+				street + "," +
+				district;
 	}
 }

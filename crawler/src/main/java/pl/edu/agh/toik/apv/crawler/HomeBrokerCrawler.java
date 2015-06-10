@@ -1,15 +1,13 @@
 package pl.edu.agh.toik.apv.crawler;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 import pl.edu.agh.toik.visualisation.database.dto.enums.OfferType;
 
@@ -165,6 +163,13 @@ public class HomeBrokerCrawler {
 			}
 		}
 
+		Elements lastInputlements = inputs.select("#Price");
+		if ( lastInputlements.size() > 0 ) {
+			Element lastInput = lastInputlements.get(0);
+			Element streetAndDistrictSpan = lastInput.nextElementSibling();
+			setOfferStreetAndDistrict(offer, streetAndDistrictSpan.text());
+		}
+
 		for ( Element div : mapDivs ) {
 			offer.setLatitude(Double.parseDouble(div.attr("data-lat")));
 			offer.setLongitude(Double.parseDouble(div.attr("data-lng")));
@@ -190,6 +195,17 @@ public class HomeBrokerCrawler {
 	private void removeHeaderAndFooter(Document document) {
 		for ( String selector : elementsToRemove ) {
 			document.select(selector).remove();
+		}
+	}
+
+	private void setOfferStreetAndDistrict(Offer offer, String streetAndDistrict) {
+		String[] splitted = streetAndDistrict.split(",");
+		if ( splitted.length > 1 ) {
+			offer.setStreet((StringUtils.trim(splitted[0])));
+			String[] cityAndDistrict = splitted[1].split(" - ");
+			if ( cityAndDistrict.length > 1 ) {
+				offer.setDistrict(StringUtils.trim(cityAndDistrict[1]));
+			}
 		}
 	}
 
@@ -241,7 +257,7 @@ public class HomeBrokerCrawler {
 				return true;
 			}
 		}
-		return url.contains("oferty?offer_no") ? true : url.contains("oferta-");
+		return url.contains("oferty?offer_no") || url.contains("oferta-");
 	}
 
     //private static String insertQuery = "INSERT INTO \"OFFER\" (\"OFFER_ID\",\"TYPE\",\"CITY\",\"PRICE\",\"AREA\",\"LATITUDE\",\"LONGITUDE\") VALUES( ? , ? , ? , ? , ? , ? , ? )";
@@ -254,16 +270,16 @@ public class HomeBrokerCrawler {
                 LOG.info("trying to save the offer: " + offer);
                 try {
                     PreparedStatement statement = connection.prepareStatement(insertQuery);
-                    statement.setLong(1,offer.getOfferId());
-                    statement.setString(2,offer.getType());
-                    statement.setString(3,offer.getCity());
-                    statement.setDouble(4,offer.getPrice());
-                    statement.setDouble(5,offer.getArea());
-                    statement.setDouble(6,offer.getLatitude());
-                    statement.setDouble(7,offer.getLongitude());
-                    statement.setString(8,offer.getDistrict());
-                    statement.setString(9,offer.getStreet());
-                    statement.setInt(10,offer.getRooms());
+                    statement.setLong(1, offer.getOfferId());
+                    statement.setString(2, offer.getType());
+                    statement.setString(3, offer.getCity());
+                    statement.setDouble(4, offer.getPrice());
+                    statement.setDouble(5, offer.getArea());
+                    statement.setDouble(6, offer.getLatitude());
+                    statement.setDouble(7, offer.getLongitude());
+                    statement.setString(8, offer.getDistrict());
+                    statement.setString(9, offer.getStreet());
+                    statement.setInt(10, offer.getRooms());
                     statement.executeUpdate();
                     //connection.commit();
                 } catch (SQLException e) {
