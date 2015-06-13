@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by Magda on 2015-06-13.
  */
-public class GeoJsonAssembler {
+public class FeatureAssembler {
 
 	public static Feature convert(Offer offer) {
 		if ( offer == null ) {
@@ -36,6 +36,10 @@ public class GeoJsonAssembler {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("price", offer.getPrice());
 		properties.put("area", offer.getArea());
+		properties.put("rooms", offer.getRooms());
+		properties.put("district", offer.getDistrict());
+		properties.put("street", offer.getStreet());
+		properties.put("type", offer.getType());
 		return properties;
 	}
 }

@@ -29,7 +29,6 @@ public class VisualisationController {
 
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
 	public String printWelcome(ModelMap model) {
-		model.addAttribute("message", "Hello world!");
         List<Offer> offers = new LinkedList<Offer>(offerService.listAllOffers());
 
         model.addAttribute("offer",offers.get(0).toString());
@@ -41,5 +40,9 @@ public class VisualisationController {
 	public @ResponseBody
 	FeatureCollection getHeatPoints() {
 		return heatMapDataService.buildGeoJsonStructure();
+	}
+
+	public void getDistrictPrices() {
+		// TODO
 	}
 }
