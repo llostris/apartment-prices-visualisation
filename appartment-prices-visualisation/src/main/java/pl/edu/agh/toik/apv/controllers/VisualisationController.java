@@ -5,7 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
+import org.springframework.web.bind.annotation.ResponseBody;
+import pl.edu.agh.toik.apv.geojson.dto.FeatureCollection;
+import pl.edu.agh.toik.apv.heatmap.HeatMapDataService;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 import pl.edu.agh.toik.visualisation.database.service.OfferService;
 
@@ -22,6 +24,9 @@ public class VisualisationController {
 	@Autowired
     OfferService offerService;
 
+	@Autowired
+	HeatMapDataService heatMapDataService;
+
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
 	public String printWelcome(ModelMap model) {
 		model.addAttribute("message", "Hello world!");
@@ -30,5 +35,11 @@ public class VisualisationController {
         model.addAttribute("offer",offers.get(0).toString());
 
 		return "hello";
+	}
+
+	@RequestMapping(value = "/heatpoints", method = {RequestMethod.GET})
+	public @ResponseBody
+	FeatureCollection getHeatPoints() {
+		return heatMapDataService.buildGeoJsonStructure();
 	}
 }

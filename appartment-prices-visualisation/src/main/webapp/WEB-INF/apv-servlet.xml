@@ -16,4 +16,6 @@
 
     <import resource="classes/spring.visualisation.xml" />
 
+    <mvc:resources mapping="/resources/**" location="resources/" />
+
 </beans>
