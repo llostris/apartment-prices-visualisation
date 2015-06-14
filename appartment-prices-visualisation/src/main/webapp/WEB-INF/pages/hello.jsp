@@ -50,6 +50,7 @@
                     <div class="col-md-9">
                         <button type="button" class="btn btn-primary" id="toggleHeatMapButton">Show/hide heat</button>
                         <button type="button" class="btn btn-primary" id="toggleMarkersButton">Show/hide markers</button>
+                        <button type="button" class="btn btn-primary" id="toggleDistrictDataButton">Show/hide districts</button>
                         <!-- TODO: add filters -->
                     </div>
                     <div class="col-md-3">

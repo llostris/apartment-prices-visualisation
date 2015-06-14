@@ -20,7 +20,8 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 	var mapState = {
 		heat: true,
 		markers: false,
-		tooltip: false
+		districts: false,
+		previousState: null
 	};
 
 	var heatPoints = {};
@@ -61,6 +62,39 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 		style: iconStyle
 	});
 
+	// district layer
+
+	var getDistrictLabel = function(feature) {
+		var properties = feature.getProperties();
+		return properties["district"] + ": " + properties["price"].toFixed(2);
+	};
+
+	var textStyleFunction = function(feature, resolution) {
+		return new ol.style.Text({
+			textAlign: 'center',
+			textBaseline: 'middle',
+			font: 'bold 12px Arial',
+			fill: new ol.style.Fill({color: '#000000'}),
+			stroke: new ol.style.Stroke({color: '#ffffff', width: 2}),
+			text: getDistrictLabel(feature)
+		});
+	};
+
+	var districtStyleFunction = function(feature, resolution) {
+		var style = new ol.style.Style({
+			text: textStyleFunction(feature, resolution)
+		});
+		return [style];
+	};
+
+	var districtLayer = new ol.layer.Vector({
+		source: new ol.source.Vector({
+			url: "/apv-war/districts",
+			format: new ol.format.GeoJSON()
+		}),
+		style: districtStyleFunction
+	});
+
 	var heatMap = new ol.Map({
 		target: 'heatMap',
 		layers: [
@@ -80,11 +114,10 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 	var featureNames = [ 'area', 'price', 'rooms', 'street', 'district', 'type' ];
 
 	heatMap.on('singleclick', function(event) {
-		console.log(event);
 		heatMap.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
 			if ( layer === markerLayer ) {
 				var properties = feature.getProperties();
-				for ( var index = 0; index < featureNames.length; index ++ ) {
+				for ( var index = 0; index < featureNames.length; index++ ) {
 					var featureName = featureNames[index];
 					$("#pointDetails_" + featureName).text(properties[featureName]);
 				}
@@ -95,7 +128,6 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 	// map navigation bar
 
 	$("#toggleMarkersButton").on('click', function() {
-		console.log("toggleMarkersButton clicked");
 		if ( mapState.markers ) {
 			heatMap.removeLayer(markerLayer);
 			$("span[id^='pointDetails_']").text("");
@@ -112,6 +144,15 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 			heatMap.addLayer(heatLayer);
 		}
 		mapState.heat = !mapState.heat;
+	});
+
+	$("#toggleDistrictDataButton").on('click', function() {
+		if ( mapState.districts ) {
+			heatMap.removeLayer(districtLayer);
+		} else {
+			heatMap.addLayer(districtLayer);
+		}
+		mapState.districts = !mapState.districts;
 	});
 
 	console.log("map.js loaded");

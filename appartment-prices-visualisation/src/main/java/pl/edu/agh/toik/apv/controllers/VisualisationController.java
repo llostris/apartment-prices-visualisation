@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.edu.agh.toik.apv.geojson.dto.FeatureCollection;
-import pl.edu.agh.toik.apv.heatmap.HeatMapDataService;
+import pl.edu.agh.toik.apv.map.MapDataService;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 import pl.edu.agh.toik.visualisation.database.service.OfferService;
 
@@ -25,7 +25,7 @@ public class VisualisationController {
     OfferService offerService;
 
 	@Autowired
-	HeatMapDataService heatMapDataService;
+	MapDataService mapDataService;
 
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
 	public String printWelcome(ModelMap model) {
@@ -36,13 +36,13 @@ public class VisualisationController {
 		return "hello";
 	}
 
-	@RequestMapping(value = "/heatpoints", method = {RequestMethod.GET})
-	public @ResponseBody
-	FeatureCollection getHeatPoints() {
-		return heatMapDataService.buildGeoJsonStructure();
+	@RequestMapping(value = "/heatpoints", method = RequestMethod.GET)
+	public @ResponseBody FeatureCollection getHeatPoints() {
+		return mapDataService.getOfferFeatures();
 	}
 
-	public void getDistrictPrices() {
-		// TODO
+	@RequestMapping(value = "/districts", method = RequestMethod.GET)
+	public @ResponseBody FeatureCollection getDistrictPrices() {
+		return mapDataService.getMeanPricePerDistrictFeatures();
 	}
 }

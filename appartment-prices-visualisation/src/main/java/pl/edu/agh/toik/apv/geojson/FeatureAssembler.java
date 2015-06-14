@@ -1,5 +1,6 @@
 package pl.edu.agh.toik.apv.geojson;
 
+import pl.edu.agh.toik.apv.dto.DistrictData;
 import pl.edu.agh.toik.apv.geojson.dto.Feature;
 import pl.edu.agh.toik.apv.geojson.dto.Geometry;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
@@ -28,6 +29,25 @@ public class FeatureAssembler {
 		feature.setType(GeoJsonConstants.FEATURE_TYPE);
 		feature.setGeometry(geometry);
 		feature.setProperties(getPropertiesMap(offer));
+
+		return feature;
+	}
+
+	public static Feature convert(DistrictData districtData) {
+		if ( districtData == null ) {
+			return null;
+		}
+
+		List<Double> coordinates = Arrays.asList(districtData.getMeanLongitude(), districtData.getMeanLatitude());
+		Geometry geometry = new Geometry();
+		geometry.setType(GeoJsonConstants.POINT_TYPE);
+		geometry.setCoordinates(coordinates);
+
+		Feature feature = new Feature();
+		feature.setType(GeoJsonConstants.FEATURE_TYPE);
+		feature.setGeometry(geometry);
+		feature.getProperties().put("price", districtData.getMeanPrice());
+		feature.getProperties().put("district", districtData.getDistrict());
 
 		return feature;
 	}
