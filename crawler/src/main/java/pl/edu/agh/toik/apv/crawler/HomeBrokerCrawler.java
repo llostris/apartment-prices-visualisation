@@ -221,7 +221,10 @@ public class HomeBrokerCrawler {
     private String[] forbiddenFragments = {"mazowieckie","opolskie","mazurskie","lodzkie","pomorskie","sl%C4%85skie","lubuskie","dolnoslaskie","lubelskie","wielkopolskie","podlaskie","podkarpackie","swietokrzyskie"};
 
 	private boolean isAllowedUrl(String url) {
-        if ( !url.contains("oferty?offer_no") && !url.toLowerCase().contains("krakw")&& !url.toLowerCase().contains("krakowsk") && !url.toLowerCase().contains("krakow") && !url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,")){
+        if ( !url.contains("oferty?offer_no") && !url.toLowerCase().contains("krakw") && !url.toLowerCase().contains("krakow") && !url.startsWith("https://homebroker.pl/wyniki-wyszukiwania/rynek,pierwotny,wtorny,rub,wynajem,strona,")){
+            return false;
+        }
+        if(url.toLowerCase().contains("krakowsk")){
             return false;
         }
         return true;
