@@ -36,6 +36,15 @@ public class VisualisationController {
 		return "hello";
 	}
 
+	@RequestMapping(value="/data", method = {RequestMethod.GET, RequestMethod.HEAD})
+	public String listData(ModelMap model) {
+		List<Offer> offers = offerService.listAllOffers();
+
+		model.addAttribute("offers", offers);
+
+		return "data";
+	}
+
 	@RequestMapping(value = "/heatpoints", method = RequestMethod.GET)
 	public @ResponseBody FeatureCollection getHeatPoints() {
 		return mapDataService.getOfferFeatures();

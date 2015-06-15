@@ -1,3 +1,5 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta charset="UTF-8" http-equiv="Content-Type" content="text/html"/>
@@ -8,7 +10,7 @@
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/ol.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
 
 </head>
@@ -38,8 +40,6 @@
 
     <div class="container">
         <div class="main-content">
-
-            <h2>${offer}</h2>
 
             <div class="page-header">
                  <h1>Map</h1>
@@ -72,6 +72,9 @@
                             </p>
                             <p>
                                 <b>Price: </b><span id="pointDetails_price"></span>
+                            </p>
+                            <p>
+                                <b>Price per m<sup>2</sup>: </b><span id="pointDetails_meterPrice"></span>
                             </p>
                             <p>
                                 <b>Street: </b><span id="pointDetails_street"></span>

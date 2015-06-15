@@ -5,53 +5,45 @@ import pl.edu.agh.toik.visualisation.database.dto.enums.OfferType;
 import javax.annotation.Generated;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * Created by Magda on 2015-05-06.
  */
 
-//@Entity(name = "\"OFFER\"")
 @Entity(name = "offer")
 public class Offer implements Serializable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    //@Column(name="\"ID\"")
     @Column(name="id")
 	private long id;
 
-    //@Column(name="\"OFFER_ID\"")
     @Column(name="offer_id")
 	private long offerId;
 
-    //@Column(name="\"TYPE\"")
     @Column(name="type")
 	private String type;
 
     @Transient
 	private OfferType offerType;
 
-    //@Column(name="\"CITY\"")
     @Column(name="city")
 	private String city;
 
-    //@Transient
     @Column(name="rooms")
 	private int rooms;
 
-    //@Column(name="\"PRICE\"")
     @Column(name="price")
 	private double price;
 
-    //@Column(name="\"AREA\"")
     @Column(name="area")
 	private double area;
 
-    //@Column(name="\"LATITUDE\"")
     @Column(name="latitude")
 	private double latitude;
 
-    //@Column(name="\"LONGITUDE\"")
     @Column(name="longitude")
 	private double longitude;
 
@@ -60,6 +52,9 @@ public class Offer implements Serializable{
 
     @Column(name="street")
     private String street;
+
+	@Transient
+	private double meterPrice;
 
 	public long getId() {
 		return id;
@@ -157,7 +152,21 @@ public class Offer implements Serializable{
         this.street = street;
     }
 
-    @Override
+	public double getMeterPrice() {
+		return meterPrice;
+	}
+
+	public void setMeterPrice(double meterPrice) {
+		this.meterPrice = meterPrice;
+	}
+
+	public void calculateMeterPrice() {
+		if ( area != 0.0 ) {
+			setMeterPrice(price / area);
+		}
+	}
+
+	@Override
 	public String toString() {
 		return type + "," +
 				city + "," +

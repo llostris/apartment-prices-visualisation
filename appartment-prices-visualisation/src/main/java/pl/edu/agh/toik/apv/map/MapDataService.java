@@ -29,6 +29,7 @@ public class MapDataService {
 
 		List<Feature> features = new ArrayList<Feature>();
 		for ( Offer offer : offers ) {
+			offer.calculateMeterPrice();
 			Feature feature = FeatureAssembler.convert(offer);
 			features.add(feature);
 		}
@@ -55,16 +56,17 @@ public class MapDataService {
 	}
 
 	private void addNormalizedWeights(List<Feature> features) {
-		double minPrice = 0;
+		double minPrice = Double.MAX_VALUE;
 		double maxPrice = Double.MIN_VALUE;
 
 		for ( Feature feature : features ) {
-			double price = (Double) feature.getProperties().get("price");
+			double price = (Double) feature.getProperties().get("meterPrice");
 			maxPrice = price > maxPrice ? price : maxPrice;
+			minPrice = price < minPrice ? price : minPrice;
 		}
 
 		for ( Feature feature : features ) {
-			double price = (Double) feature.getProperties().get("price");
+			double price = (Double) feature.getProperties().get("meterPrice");
 			double normalized = (price - minPrice) / (maxPrice - minPrice);
 			feature.getProperties().put("weight", normalized);
 		}
