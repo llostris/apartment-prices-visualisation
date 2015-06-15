@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ public class OfferService {
         return offerDAO;
     }
 
+    private List<Offer> offers;
+
     @Autowired
     public void setOfferDAO(OfferDAO offerDAO) {
         this.offerDAO = offerDAO;
@@ -32,6 +35,9 @@ public class OfferService {
     }
 
     public List<Offer> listAllOffers() {
-        return getOfferDAO().listOffers();
+        if(null==offers){
+            offers = new LinkedList<Offer>(getOfferDAO().listOffers());
+        }
+        return offers;
     }
 }

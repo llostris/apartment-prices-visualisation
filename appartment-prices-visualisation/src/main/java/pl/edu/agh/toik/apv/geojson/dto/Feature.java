@@ -1,5 +1,7 @@
 package pl.edu.agh.toik.apv.geojson.dto;
 
+import pl.edu.agh.toik.apv.geojson.GeoJsonConstants;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class Feature implements Serializable {
 	private Map<String, Object> properties;
 
 	public Feature() {
-		type = "Feature";
+		type = GeoJsonConstants.FEATURE_TYPE;
 		properties = new HashMap<String, Object>();
 	}
 
