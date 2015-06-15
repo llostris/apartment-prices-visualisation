@@ -1,6 +1,6 @@
-package pl.edu.agh.toik.apv.geojson.dto;
+package pl.edu.agh.toik.apv.geojson.filters.complex;
 
-import pl.edu.agh.toik.apv.geojson.FilterType;
+import pl.edu.agh.toik.apv.geojson.dto.Feature;
 
 import java.util.Iterator;
 import java.util.List;
