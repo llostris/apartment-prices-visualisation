@@ -7,13 +7,11 @@ import pl.edu.agh.toik.apv.dto.DistrictData;
 import pl.edu.agh.toik.apv.geojson.FeatureAssembler;
 import pl.edu.agh.toik.apv.geojson.dto.Feature;
 import pl.edu.agh.toik.apv.geojson.dto.FeatureCollection;
+import pl.edu.agh.toik.apv.geojson.filters.iface.SimpleFilter;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 import pl.edu.agh.toik.visualisation.database.service.OfferService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Magda on 2015-06-13.
@@ -21,18 +19,55 @@ import java.util.Map;
 @Component
 public class MapDataService {
 
-	@Autowired
-	OfferService offerService;
+    @Autowired
+    OfferService offerService;
+
+    List<Feature> offersFeatures;
+
+    public FeatureCollection getFilteredOffers(List<SimpleFilter> filters){
+        if(null == filters){
+            return getOfferFeatures();
+        }
+        if(null == offersFeatures){
+            setOffersFeatures();
+        }
+
+        List<Feature> filteredFeatures = filterFeatures(filters);
+
+        addNormalizedWeights(filteredFeatures);
+
+        return new FeatureCollection(filteredFeatures);
+    }
+
+    private List<Feature> filterFeatures(List<SimpleFilter> filters){
+        List<Feature> features = new LinkedList<>();
+        features.addAll(offersFeatures);
+        for(SimpleFilter filter : filters){
+            features = filter.filterFeatures(features);
+        }
+        return features;
+    }
+
+    private void setOffersFeatures(){
+        List<Offer> offers = offerService.listAllOffers();
+
+        List<Feature> features = new ArrayList<Feature>();
+        for ( Offer offer : offers ) {
+            Feature feature = FeatureAssembler.convert(offer);
+            features.add(feature);
+        }
+
+        offersFeatures = features;
+    }
 
 	public FeatureCollection getOfferFeatures() {
-		List<Offer> offers = offerService.listAllOffers();
+        if(null == offersFeatures){
+            setOffersFeatures();
+        }
 
-		List<Feature> features = new ArrayList<Feature>();
-		for ( Offer offer : offers ) {
-			Feature feature = FeatureAssembler.convert(offer);
-			features.add(feature);
-		}
+        List<Feature> features = new ArrayList<>();
 
+        features.addAll(offersFeatures);
 		addNormalizedWeights(features);
 
 		return new FeatureCollection(features);
