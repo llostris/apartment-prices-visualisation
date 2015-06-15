@@ -2,9 +2,6 @@ package pl.edu.agh.toik.apv.geojson.filters.iface;
 
 import pl.edu.agh.toik.apv.geojson.dto.Feature;
 
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Created by Puszek_SE on 2015-06-15.
  */
@@ -27,19 +24,12 @@ public abstract class InBetweenFilter extends AbstractFilter{
         return inBetween(area);
     }
 
-    public double getMin() {
-        return min;
-    }
-
-    public void setMin(double min) {
-        this.min = min;
-    }
-
-    public double getMax() {
-        return max;
-    }
-
     public void setMax(double max) {
+        this.max = max;
+    }
+
+    public void setMinMax(double min, double max){
+        this.min = min;
         this.max = max;
     }
 }
