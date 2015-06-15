@@ -3,6 +3,7 @@ package pl.edu.agh.toik.apv.geojson.dto;
 import pl.edu.agh.toik.apv.geojson.GeoJsonConstants;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,6 +23,21 @@ public class FeatureCollection {
 		this.type = GeoJsonConstants.FEATURE_COLLECTION_TYPE;
 		this.features = features;
 	}
+
+    public FeatureCollection(List<Feature> features, List<Filter> filters){
+        Iterator<Feature> iterator = features.iterator();
+        while (iterator.hasNext()){
+            Feature feature = iterator.next();
+            for(Filter filter : filters){
+                if(false == filter.check(feature)){
+                    features.remove(feature);
+                    break;
+                }
+            }
+        }
+        this.type = GeoJsonConstants.FEATURE_COLLECTION_TYPE;
+        this.features = features;
+    }
 
 	public String getType() {
 		return type;
