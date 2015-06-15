@@ -50,6 +50,7 @@ public class MapDataService {
 
         List<Feature> features = new ArrayList<Feature>();
         for ( Offer offer : offers ) {
+            offer.calculateMeterPrice();
             Feature feature = FeatureAssembler.convert(offer);
             features.add(feature);
         }
