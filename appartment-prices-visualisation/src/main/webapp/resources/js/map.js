@@ -111,7 +111,7 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 
 	// select-a-feature feature
 
-	var featureNames = [ 'area', 'price', 'rooms', 'street', 'district', 'type' ];
+	var featureNames = [ 'area', 'price', 'rooms', 'street', 'district', 'type', 'meterPrice' ];
 
 	heatMap.on('singleclick', function(event) {
 		heatMap.forEachFeatureAtPixel(event.pixel, function (feature, layer) {

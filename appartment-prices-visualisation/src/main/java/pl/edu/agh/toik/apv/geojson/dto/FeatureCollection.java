@@ -1,11 +1,8 @@
 package pl.edu.agh.toik.apv.geojson.dto;
 
 import pl.edu.agh.toik.apv.geojson.GeoJsonConstants;
-import pl.edu.agh.toik.apv.geojson.filters.complex.Filter;
-import pl.edu.agh.toik.apv.geojson.filters.iface.SimpleFilter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

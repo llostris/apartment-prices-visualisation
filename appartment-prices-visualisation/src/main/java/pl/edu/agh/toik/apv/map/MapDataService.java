@@ -25,11 +25,8 @@ public class MapDataService {
     List<Feature> offersFeatures;
 
     public FeatureCollection getFilteredOffers(List<SimpleFilter> filters){
-        if(null == filters){
-            return getOfferFeatures();
-        }
         if(null == offersFeatures){
-            setOffersFeatures();
+            convertAllOffers();
         }
 
         List<Feature> filteredFeatures = filterFeatures(filters);
@@ -48,7 +45,7 @@ public class MapDataService {
         return features;
     }
 
-    private void setOffersFeatures(){
+    private void convertAllOffers(){
         List<Offer> offers = offerService.listAllOffers();
 
         List<Feature> features = new ArrayList<Feature>();
@@ -62,8 +59,9 @@ public class MapDataService {
 
 	public FeatureCollection getOfferFeatures() {
         if(null == offersFeatures){
-            setOffersFeatures();
+            convertAllOffers();
         }
+
 
         List<Feature> features = new ArrayList<>();
 
@@ -90,16 +88,17 @@ public class MapDataService {
 	}
 
 	private void addNormalizedWeights(List<Feature> features) {
-		double minPrice = 0;
+		double minPrice = Double.MAX_VALUE;
 		double maxPrice = Double.MIN_VALUE;
 
 		for ( Feature feature : features ) {
-			double price = (Double) feature.getProperties().get("price");
+			double price = (Double) feature.getProperties().get("meterPrice");
 			maxPrice = price > maxPrice ? price : maxPrice;
+			minPrice = price < minPrice ? price : minPrice;
 		}
 
 		for ( Feature feature : features ) {
-			double price = (Double) feature.getProperties().get("price");
+			double price = (Double) feature.getProperties().get("meterPrice");
 			double normalized = (price - minPrice) / (maxPrice - minPrice);
 			feature.getProperties().put("weight", normalized);
 		}
