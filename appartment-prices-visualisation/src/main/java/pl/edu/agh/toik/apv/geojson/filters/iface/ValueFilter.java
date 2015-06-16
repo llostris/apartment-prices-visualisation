@@ -17,18 +17,10 @@ public abstract class ValueFilter extends AbstractFilter {
     @Override
     public boolean checkProperty(Feature feature) {
         String value = (String) feature.getProperties().get(key);
-        return this.value.equals(value);
+        return (null==this.value || this.value.equals(value));
     }
 
     public void setValue(String value) {
         this.value = value;
     }
-
-	public void setValueOrClear(String value) {
-		if ( value != null ) {
-			this.value = value;
-		} else {
-			this.value = "";
-		}
-	}
 }

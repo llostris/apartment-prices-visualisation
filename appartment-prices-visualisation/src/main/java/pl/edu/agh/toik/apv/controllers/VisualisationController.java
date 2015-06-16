@@ -70,10 +70,10 @@ public class VisualisationController {
                     @RequestParam(value = "area-max", required = false) Double areaMax, @RequestParam(value = "price-min", required = false) Double priceMin,
                     @RequestParam(value = "price-max", required = false) Double priceMax, @RequestParam(value = "district", required = false) String district,                     @RequestParam(value = "type", required = false) String offerType) {
 
-        areaFilter.setMinMaxOrClear(areaMin, areaMax);
-        priceFilter.setMinMaxOrClear(priceMin, priceMax);
-	    districtFilter.setValueOrClear(district);
-	    typeFilter.setValueOrClear(offerType);
+        areaFilter.setMinMax(areaMin, areaMax);
+        priceFilter.setMinMax(priceMin, priceMax);
+	    districtFilter.setValue(district);
+	    typeFilter.setValue(offerType);
 
         return mapDataService.getFilteredOffers(filters);
     }
