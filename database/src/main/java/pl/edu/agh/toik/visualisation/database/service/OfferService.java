@@ -5,8 +5,11 @@ import org.springframework.stereotype.Component;
 import pl.edu.agh.toik.visualisation.database.dao.OfferDAO;
 import pl.edu.agh.toik.visualisation.database.dto.Offer;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Puszek_SE on 2015-05-27.
@@ -40,4 +43,15 @@ public class OfferService {
         }
         return offers;
     }
+
+	public Set<String> getAllDistricts() {
+		Set<String> districts = new HashSet<String>();
+
+		List<Offer> offers = listAllOffers();
+		for ( Offer offer : offers ) {
+			districts.add(offer.getDistrict());
+		}
+
+		return districts;
+	}
 }

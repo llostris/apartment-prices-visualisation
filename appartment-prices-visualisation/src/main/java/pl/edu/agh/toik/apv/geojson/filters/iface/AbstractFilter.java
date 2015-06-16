@@ -21,8 +21,8 @@ public abstract class AbstractFilter implements SimpleFilter {
         Iterator<Feature> iterator = features.iterator();
         while (iterator.hasNext()) {
             Feature feature = iterator.next();
-            if(false == checkProperty(feature)){
-                features.remove(feature);
+            if( !checkProperty(feature) ){
+                iterator.remove();
             }
         }
         return features;

@@ -32,4 +32,12 @@ public abstract class InBetweenFilter extends AbstractFilter{
         this.min = min;
         this.max = max;
     }
+
+	public void setMinMaxOrClear(Double min, Double max) {
+		if ( min != null && max != null ) {
+			setMinMax(min, max);
+		} else {
+			setMinMax(0.0, 0.0);
+		}
+	}
 }

@@ -47,7 +47,8 @@ public class VisualisationController {
 
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
 	public String printWelcome(ModelMap model) {
-		return "hello";
+		model.addAttribute("districts", offerService.getAllDistricts());
+		return "index";
 	}
 
 	@RequestMapping(value="/data", method = {RequestMethod.GET, RequestMethod.HEAD})
@@ -65,13 +66,14 @@ public class VisualisationController {
 	}
 
     @RequestMapping(value = "/heatpoints/filtered", method = RequestMethod.GET)
-    public @ResponseBody FeatureCollection getHeatPoints(@RequestParam("area-min") double areaMin, @RequestParam("area-max") double areaMax,
-                                                         @RequestParam("price-min") double priceMin, @RequestParam("price-max") double priceMax,
-                                                         @RequestParam("district") String district, @RequestParam("type") String offerType) {
-        areaFilter.setMinMax(areaMin,areaMax);
-        priceFilter.setMinMax(priceMin,priceMax);
-        districtFilter.setValue(district);
-        typeFilter.setValue(offerType);
+    public @ResponseBody FeatureCollection getHeatPoints(@RequestParam(value = "area-min", required = false) Double areaMin,
+                    @RequestParam(value = "area-max", required = false) Double areaMax, @RequestParam(value = "price-min", required = false) Double priceMin,
+                    @RequestParam(value = "price-max", required = false) Double priceMax, @RequestParam(value = "district", required = false) String district,                     @RequestParam(value = "type", required = false) String offerType) {
+
+        areaFilter.setMinMaxOrClear(areaMin, areaMax);
+        priceFilter.setMinMaxOrClear(priceMin, priceMax);
+	    districtFilter.setValueOrClear(district);
+	    typeFilter.setValueOrClear(offerType);
 
         return mapDataService.getFilteredOffers(filters);
     }
@@ -79,4 +81,5 @@ public class VisualisationController {
 	public @ResponseBody FeatureCollection getDistrictPrices() {
 		return mapDataService.getMeanPricePerDistrictFeatures();
 	}
+
 }

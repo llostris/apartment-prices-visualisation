@@ -8,7 +8,7 @@ import pl.edu.agh.toik.apv.geojson.filters.iface.InBetweenFilter;
 public class AreaFilter extends InBetweenFilter {
 
     public AreaFilter(double min, double max){
-        super(min,max,"key");
+        super(min,max,"area");
     }
 
 }

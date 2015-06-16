@@ -1,5 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
     <meta charset="UTF-8" http-equiv="Content-Type" content="text/html"/>
@@ -48,10 +51,12 @@
             <div>
                 <div class="row">
                     <div class="col-md-9">
-                        <button type="button" class="btn btn-primary" id="toggleHeatMapButton">Show/hide heat</button>
-                        <button type="button" class="btn btn-primary" id="toggleMarkersButton">Show/hide markers</button>
-                        <button type="button" class="btn btn-primary" id="toggleDistrictDataButton">Show/hide districts</button>
-                        <!-- TODO: add filters -->
+                        <!-- Buttons -->
+                        <%--<div class="map-top-row">--%>
+                            <button type="button" class="btn btn-primary" id="toggleHeatMapButton">Show/hide heat</button>
+                            <button type="button" class="btn btn-primary" id="toggleMarkersButton">Show/hide markers</button>
+                            <button type="button" class="btn btn-primary" id="toggleDistrictDataButton">Show/hide districts</button>
+                        <%--</div>--%>
                     </div>
                     <div class="col-md-3">
                         <!-- TODO: vertical alignment? -->
@@ -85,6 +90,60 @@
                             <p>
                                 <b>Type: </b><span id="pointDetails_type"></span>
                             </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row map-top-row">
+                    <!-- TODO: add filters -->
+                    <div id="filters">
+                        <form id="filterForm">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Price
+                                </div>
+                                <div class="col-md-9 text-left">
+                                    <label for="mapFilterPriceMin">from</label> <input id="mapFilterPriceMin"
+                                                                                       type="text" data-param="price-min"/>
+                                    <label for="mapFilterPriceMax">to</label> <input id="mapFilterPriceMax" type="text" data-param="price-max"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    Area
+                                </div>
+                                <div class="col-md-9 text-left">
+                                    <label for="mapFilterAreaMin">from</label> <input id="mapFilterAreaMin" type="text" data-param="area-min"/>
+                                    <label for="mapFilterAreaMax">to</label> <input id="mapFilterAreaMax" type="text" data-param="area-max"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="mapFilterType">Type</label>
+                                </div>
+                                <div class="col-md-9 text-left">
+                                    <select id="mapFilterType" data-param="type">
+                                        <!-- TODO: get from model -->
+                                        <option>Mieszkanie</option>
+                                        <option>Dom</option>
+                                        <option>Lokal użytkowy</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label for="mapFilterDistrict">District</label>
+                                </div>
+                                <div class="col-md-9 text-left">
+                                    <select id="mapFilterDistrict" data-param="district">
+                                        <c:forEach items="${districts}" var="district">
+                                            <option>${district}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <button type="button" class="btn btn-primary" id="filterButton">Filter</button>
                         </div>
                     </div>
                 </div>

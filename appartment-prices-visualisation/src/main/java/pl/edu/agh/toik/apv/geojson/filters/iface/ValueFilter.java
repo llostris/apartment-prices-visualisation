@@ -23,4 +23,12 @@ public abstract class ValueFilter extends AbstractFilter {
     public void setValue(String value) {
         this.value = value;
     }
+
+	public void setValueOrClear(String value) {
+		if ( value != null ) {
+			this.value = value;
+		} else {
+			this.value = "";
+		}
+	}
 }

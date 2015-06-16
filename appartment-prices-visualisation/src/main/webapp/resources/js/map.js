@@ -6,14 +6,16 @@ require.config({
 	paths: {
 		jquery: 'jquery-1.11.3.min',
 		OpenLayers: 'ol',
-		bootstrap: 'bootstrap.min'
+		bootstrap: 'bootstrap.min',
+		filters: 'filters'
 	},
 	shim: {
 		bootstrap: [ "jquery" ]
 	}
 });
 
-require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
+
+require([ "jquery", "OpenLayers", "filters", "bootstrap" ], function($, ol, filters) {
 	console.log("Loading map.js");
 
 	// helper object
@@ -97,7 +99,7 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 
 	var heatMap = new ol.Map({
 		target: 'heatMap',
-		layers: [
+		mapLayers: [
 			new ol.layer.Tile({
 				source: new ol.source.OSM()
 			}),
@@ -154,6 +156,11 @@ require([ "jquery", "OpenLayers", "bootstrap" ], function($, ol) {
 		}
 		mapState.districts = !mapState.districts;
 	});
+
+	// filters
+
+	filters.configure("filterForm")
+	$("#filterButton").on('click', filters.submitForm);
 
 	console.log("map.js loaded");
 });
