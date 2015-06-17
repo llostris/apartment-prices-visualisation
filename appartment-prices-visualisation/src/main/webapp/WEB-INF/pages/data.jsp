@@ -42,7 +42,12 @@
 <div class="container">
     <div class="main-content">
         <div class="row">
-            <h2>Filter</h2>
+
+            <div class="col-md-9">
+                <h2>Filter</h2>
+            </div>
+        </div>
+        <div class="row map-top-row">
             <%@include file="filter.jsp"%>
         </div>
         <div class="table-responsive">

@@ -16,7 +16,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>apartment-prices-visualisation</groupId>
+            <groupId>pl.edu.agh.toik</groupId>
             <artifactId>database</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
