@@ -34,7 +34,6 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="./">Home</a></li>
                     <li><a href="./data">Data</a></li>
-                    <%--<li><a href="#contact">Contact</a></li>--%>
                 </ul>
             </div>
             <!--/.nav-collapse -->
@@ -94,58 +93,7 @@
                     </div>
                 </div>
                 <div class="row map-top-row">
-                    <!-- TODO: add filters -->
-                    <div id="filters">
-                        <form id="filterForm">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    Price
-                                </div>
-                                <div class="col-md-9 text-left">
-                                    <label for="mapFilterPriceMin">from</label> <input id="mapFilterPriceMin"
-                                                                                       type="text" data-param="price-min"/>
-                                    <label for="mapFilterPriceMax">to</label> <input id="mapFilterPriceMax" type="text" data-param="price-max"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    Area
-                                </div>
-                                <div class="col-md-9 text-left">
-                                    <label for="mapFilterAreaMin">from</label> <input id="mapFilterAreaMin" type="text" data-param="area-min"/>
-                                    <label for="mapFilterAreaMax">to</label> <input id="mapFilterAreaMax" type="text" data-param="area-max"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <label for="mapFilterType">Type</label>
-                                </div>
-                                <div class="col-md-9 text-left">
-                                    <select id="mapFilterType" data-param="type">
-                                        <!-- TODO: get from model -->
-                                        <option>Mieszkanie</option>
-                                        <option>Dom</option>
-                                        <option>Lokal użytkowy</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <label for="mapFilterDistrict">District</label>
-                                </div>
-                                <div class="col-md-9 text-left">
-                                    <select id="mapFilterDistrict" data-param="district">
-                                        <c:forEach items="${districts}" var="district">
-                                            <option>${district}</option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="row">
-                            <button type="button" class="btn btn-primary" id="filterButton">Filter</button>
-                        </div>
-                    </div>
+                    <%@include file="filter.jsp"%>
                 </div>
             </div>
         </div>

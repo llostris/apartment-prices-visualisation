@@ -55,6 +55,7 @@ public class VisualisationController {
 	public String listData(ModelMap model) {
 		List<Offer> offers = offerService.listAllOffers();
 
+		model.addAttribute("districts", offerService.getAllDistricts());
 		model.addAttribute("offers", offers);
 
 		return "data";

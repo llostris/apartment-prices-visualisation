@@ -26,45 +26,27 @@ require([ "jquery", "OpenLayers", "filters", "bootstrap" ], function($, ol, filt
 		previousState: null
 	};
 
-	var heatPoints = {};
-	$.ajax({
-		url: "/apv-war/heatpoints/",
-		success: function(data) {
-			heatPoints = data;
-		}
-	});
+	var heatLayer, markerLayer, districtLayer;
+	var offerLayers = [];
 
-	// TODO: use previously downloaded heatpoints instead of downloading same data twice
+	var getFeaturesInMapProjection = function(data) {
+		return (new ol.format.GeoJSON()).readFeatures(data, {
+			dataProjection: "EPSG:4326",
+			featureProjection: "EPSG:3857"
+		})
+	};
+
+	// labels and styles
 
 	var iconStyle = new ol.style.Style({
 		image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
 			anchor: [0.5, 46],
 			anchorXUnits: 'fraction',
 			anchorYUnits: 'pixels',
-			opacity: 0.75,
+			opacity: 1.0,
 			src: '/apv-war/resources/img/map-marker.png'
 		}))
 	});
-
-	var heatLayer = new ol.layer.Heatmap({
-		source: new ol.source.Vector({
-			url: "/apv-war/heatpoints/",
-			format: new ol.format.GeoJSON()
-		}),
-		blur: 10,
-		radius: 30
-	});
-
-	var markerLayer = new ol.layer.Vector({
-		source: new ol.source.Vector({
-			//features: heatpoints.features
-			url: "/apv-war/heatpoints/",
-			format: new ol.format.GeoJSON()
-		}),
-		style: iconStyle
-	});
-
-	// district layer
 
 	var getDistrictLabel = function(feature) {
 		var properties = feature.getProperties();
@@ -89,78 +71,120 @@ require([ "jquery", "OpenLayers", "filters", "bootstrap" ], function($, ol, filt
 		return [style];
 	};
 
-	var districtLayer = new ol.layer.Vector({
-		source: new ol.source.Vector({
-			url: "/apv-war/districts",
-			format: new ol.format.GeoJSON()
-		}),
-		style: districtStyleFunction
-	});
+	// map initialization function
 
-	var heatMap = new ol.Map({
-		target: 'heatMap',
-		mapLayers: [
-			new ol.layer.Tile({
-				source: new ol.source.OSM()
+	var initializeMap = function(heatPoints) {
+		heatLayer = new ol.layer.Heatmap({
+			source: new ol.source.Vector({
+				features: getFeaturesInMapProjection(heatPoints)
 			}),
-			heatLayer
-		],
-		view: new ol.View({
-			center: ol.proj.transform([19.9451349, 50.052938], 'EPSG:4326', 'EPSG:3857'),
-			zoom: 12
-		})
-	});
-
-	// select-a-feature feature
-
-	var featureNames = [ 'area', 'price', 'rooms', 'street', 'district', 'type', 'meterPrice' ];
-
-	heatMap.on('singleclick', function(event) {
-		heatMap.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
-			if ( layer === markerLayer ) {
-				var properties = feature.getProperties();
-				for ( var index = 0; index < featureNames.length; index++ ) {
-					var featureName = featureNames[index];
-					$("#pointDetails_" + featureName).text(properties[featureName]);
-				}
-			}
+			blur: 10,
+			radius: 30
 		});
+
+		markerLayer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: getFeaturesInMapProjection(heatPoints)
+			}),
+			style: iconStyle,
+			visible: false
+		});
+
+		districtLayer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				url: "/apv-war/districts",
+				format: new ol.format.GeoJSON()
+			}),
+			visible: false,
+			style: districtStyleFunction
+		});
+
+		var heatMap = new ol.Map({
+			target: 'heatMap',
+			layers: [
+				new ol.layer.Tile({
+					source: new ol.source.OSM()
+				}),
+				heatLayer,
+				markerLayer,
+				districtLayer
+			],
+			view: new ol.View({
+				center: ol.proj.transform([19.9451349, 50.052938], 'EPSG:4326', 'EPSG:3857'),
+				zoom: 12
+			})
+		});
+
+		// select-a-feature feature
+
+		var featureNames = [ 'area', 'price', 'rooms', 'street', 'district', 'type', 'meterPrice' ];
+
+		heatMap.on('singleclick', function(event) {
+			heatMap.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+				if ( layer === markerLayer ) {
+					var properties = feature.getProperties();
+					for ( var index = 0; index < featureNames.length; index++ ) {
+						var featureName = featureNames[index];
+						$("#pointDetails_" + featureName).text(properties[featureName]);
+					}
+				}
+			});
+		});
+
+		offerLayers = [ heatLayer, markerLayer ];
+	};
+
+	// load unfiltered data
+
+	$.ajax({
+		url: "/apv-war/heatpoints/",
+		success: function(data) {
+			initializeMap(data);
+		}
 	});
 
 	// map navigation bar
 
 	$("#toggleMarkersButton").on('click', function() {
 		if ( mapState.markers ) {
-			heatMap.removeLayer(markerLayer);
+			markerLayer.setVisible(false);
 			$("span[id^='pointDetails_']").text("");
 		} else {
-			heatMap.addLayer(markerLayer);
+			markerLayer.setVisible(true);
 		}
 		mapState.markers = !mapState.markers;
 	});
 
 	$("#toggleHeatMapButton").on('click', function() {
 		if ( mapState.heat ) {
-			heatMap.removeLayer(heatLayer);
+			heatLayer.setVisible(false);
 		} else {
-			heatMap.addLayer(heatLayer);
+			heatLayer.setVisible(true);
 		}
 		mapState.heat = !mapState.heat;
 	});
 
 	$("#toggleDistrictDataButton").on('click', function() {
 		if ( mapState.districts ) {
-			heatMap.removeLayer(districtLayer);
+			districtLayer.setVisible(false);
 		} else {
-			heatMap.addLayer(districtLayer);
+			districtLayer.setVisible(true);
 		}
 		mapState.districts = !mapState.districts;
 	});
 
 	// filters
 
-	filters.configure("filterForm")
-	$("#filterButton").on('click', filters.submitForm);
+	var setFilteredFeatures = function(data) {
+		for ( var i = 0; i < offerLayers.length; i++ ) {
+			offerLayers[i].getSource().clear();
+			var features = getFeaturesInMapProjection(data);
+			offerLayers[i].getSource().addFeatures(features);
+		}
+	};
+
+	filters.configure("filterForm", setFilteredFeatures);
+	$("#filterButton").on('click', filters.applyFilters);
 
 	console.log("map.js loaded");
 });

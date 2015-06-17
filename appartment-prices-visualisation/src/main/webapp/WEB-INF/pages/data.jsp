@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Appartment Prices Visualisation</title>
-    <script data-main="${pageContext.request.contextPath}/resources/js/map.js" src="${pageContext.request.contextPath}/resources/js/require.js"></script>
+    <script data-main="${pageContext.request.contextPath}/resources/js/datalist.js" src="${pageContext.request.contextPath}/resources/js/require.js"></script>
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/ol.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css"/>
@@ -41,6 +41,10 @@
 
 <div class="container">
     <div class="main-content">
+        <div class="row">
+            <h2>Filter</h2>
+            <%@include file="filter.jsp"%>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead>
@@ -55,7 +59,7 @@
                         <th>Type</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="offerData">
                     <c:forEach items="${offers}" var="offer">
                         <tr>
                             <td>${offer.id}</td>

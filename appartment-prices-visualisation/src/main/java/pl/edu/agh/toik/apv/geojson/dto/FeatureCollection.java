@@ -14,13 +14,17 @@ public class FeatureCollection {
 
 	private List<Feature> features;
 
+	private CoordinateReferenceSystem crs;
+
 	public FeatureCollection() {
 		features = new ArrayList<Feature>();
+		crs = new CoordinateReferenceSystem();
 	}
 
 	public FeatureCollection(List<Feature> features) {
 		this.type = GeoJsonConstants.FEATURE_COLLECTION_TYPE;
 		this.features = features;
+		this.crs = new CoordinateReferenceSystem();
 	}
 
 	public String getType() {
@@ -37,5 +41,13 @@ public class FeatureCollection {
 
 	public void setFeatures(List<Feature> features) {
 		this.features = features;
+	}
+
+	public CoordinateReferenceSystem getCrs() {
+		return crs;
+	}
+
+	public void setCrs(CoordinateReferenceSystem crs) {
+		this.crs = crs;
 	}
 }

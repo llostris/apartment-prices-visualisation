@@ -5,11 +5,11 @@
 define(['jquery'], function($) {
 
 	var config = {
-		url: '/apv-war/heatpoints/filtered/',
+		url: '/apv-war/heatpoints/filtered',
 		formId: '',
 		featureCollection: [],
 		configured: false,
-		mapLayers: []
+		callback: null
 	};
 
 	var readFilterForm = function() {
@@ -24,7 +24,6 @@ define(['jquery'], function($) {
 			}
 			if ( parameterValue != null && parameterValue != '' ) {
 				var parameterName = $(this).data("param");
-				console.log(parameterName + " " + parameterValue);
 				urlParameters += parameterName + "=" + parameterValue + "&";
 			}
 		});
@@ -41,23 +40,23 @@ define(['jquery'], function($) {
 			url: config.url + "?" + parameters,
 			success: function(data) {
 				config.featureCollection = data;
-				console.log(data);
+				config.callback(data);
 			}
 		});
 	};
 
 	return {
 		config: config,
-		configure: function (formId, url) {
+		configure: function (formId, callback,  url) {
 			config.formId = formId;
+			config.callback = callback;
 			config.configured = true;
 			if ( url ) {
 				config.url = url;
 			}
 			console.log("Filters configured");
 		},
-		that: this,
-		submitForm: function () {
+		applyFilters: function () {
 			if ( config.configured || config.formId === '' ) {
 				var parameters = readFilterForm();
 				getData(parameters);

@@ -9,4 +9,6 @@ public class GeoJsonConstants {
 	public static final String POINT_TYPE = "Point";
 
 	public static final String FEATURE_TYPE = "Feature";
+
+	public static final String CRS_TYPE = "name";
 }

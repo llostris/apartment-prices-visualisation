@@ -61,6 +61,7 @@ public class FeatureAssembler {
 		properties.put("street", offer.getStreet());
 		properties.put("type", offer.getType());
 		properties.put("meterPrice", offer.getMeterPrice());
+		properties.put("id", offer.getId());
 		return properties;
 	}
 }
